@@ -1,5 +1,6 @@
 import requests
 import time
+from parsel import Selector
 
 
 def fetch(url):
@@ -15,7 +16,11 @@ def fetch(url):
 
 
 def scrape_novidades(html_content):
-    """Seu código deve vir aqui"""
+    selector = Selector(html_content)
+    result = selector.css("h3.tec--card__title a::attr(href)").getall()
+    if not result:
+        return []
+    return result
 
 
 # Requisito 3
@@ -34,5 +39,6 @@ def get_tech_news(amount):
 
 
 if __name__ == "__main__":
-    teste = fetch("https://www.tecmundo.com.br/novidades")
+    main_page_html_content = fetch("https://www.tecmundo.com.br/novidades")
+    teste = scrape_novidades(main_page_html_content)
     print(teste)
