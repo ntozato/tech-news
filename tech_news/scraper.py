@@ -111,10 +111,10 @@ def get_tech_news(amount):
     """Seu código deve vir aqui"""
 
 
-if __name__ == "__main__":
-    main_page_html_content = fetch("https://www.tecmundo.com.br/novidades")
-    new_page_html_content = fetch(
-        "https://www.tecmundo.com.br/minha-serie/215168-10-"
-        "viloes-animes-extremamente-inteligentes.htm")
-    teste = scrape_noticia(new_page_html_content)
-    print(teste)
+# if __name__ == "__main__":
+#     main_page_html_content = fetch("https://www.tecmundo.com.br/novidades")
+#     new_page_html_content = fetch(
+#         "https://www.tecmundo.com.br/minha-serie/215168-10-"
+#         "viloes-animes-extremamente-inteligentes.htm")
+#     teste = scrape_noticia(new_page_html_content)
+#     print(teste)
