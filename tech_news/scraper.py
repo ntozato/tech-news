@@ -3,6 +3,29 @@ import time
 from parsel import Selector
 
 
+def shares_count_repair(selector):
+    shares_count = selector.css(
+        "div.tec--toolbar__item"
+        "svg ::text").get()
+
+    if shares_count:
+        shares_count = shares_count.split(" ")[1]
+        shares_count = int(shares_count)
+    else:
+        shares_count = 0
+    return shares_count
+
+
+def writer_repair(selector):
+    writer = selector.css("div.tec--author__info ::text").get()
+
+    if writer is None:
+        writer = selector.css("div.z--font-bold a::text").get()
+    if writer:
+        writer = writer.strip()
+    return writer
+
+
 def fetch(url):
     try:
         time.sleep(1)
@@ -33,8 +56,54 @@ def scrape_next_page_link(html_content):
 
 
 # Requisito 4
+
+# https://stackoverflow.com/questions/12453580/how-to-concatenate-items-in-a-list-to-a-single-string
+# https://www.jcchouinard.com/web-scraping-with-python-and-requests-html/
 def scrape_noticia(html_content):
-    """Seu código deve vir aqui"""
+    selector = Selector(html_content)
+
+    url = selector.xpath("//link[@rel='canonical']/@href").get()
+
+    title = selector.css("h1.tec--article__header__title ::text").get()
+
+    timestamp = selector.css("#js-article-date ::attr(datetime)").get()
+
+    writer = writer_repair(selector)
+
+    shares_count = shares_count_repair(selector)
+
+    comments_count = selector.css("#js-comments-btn ::attr(data-count)").get()
+
+    summary = "".join(
+        selector.css("div.tec--article__body > p:nth-child(1) ::text").getall()
+    )
+
+    sources_list = selector.css(
+        "div.z--mb-16 div a::text").getall()
+
+    sources = []
+
+    for item in sources_list:
+        sources.append(item.strip())
+
+    categories_list = selector.css("#js-categories a::text").getall()
+
+    categories = []
+
+    for item in categories_list:
+        categories.append(item.strip())
+
+    return {
+        "url": url,
+        "title": title,
+        "timestamp": timestamp,
+        "writer": writer,
+        "shares_count": shares_count,
+        "comments_count": int(comments_count),
+        "summary": summary,
+        "sources": sources,
+        "categories": categories,
+    }
 
 
 # Requisito 5
@@ -44,5 +113,8 @@ def get_tech_news(amount):
 
 if __name__ == "__main__":
     main_page_html_content = fetch("https://www.tecmundo.com.br/novidades")
-    teste = scrape_next_page_link(main_page_html_content)
+    new_page_html_content = fetch(
+        "https://www.tecmundo.com.br/minha-serie/215168-10-"
+        "viloes-animes-extremamente-inteligentes.htm")
+    teste = scrape_noticia(new_page_html_content)
     print(teste)
