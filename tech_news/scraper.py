@@ -1,12 +1,13 @@
 import requests
 import time
 from parsel import Selector
+from tech_news.database import create_news
 
 
 def shares_count_repair(selector):
     shares_count = selector.css(
         "div.tec--toolbar__item"
-        "svg ::text").get()
+        "::text").get()
 
     if shares_count:
         shares_count = shares_count.split(" ")[1]
@@ -25,7 +26,7 @@ def writer_repair(selector):
         writer = writer.strip()
     return writer
 
-
+# Requisito 1
 def fetch(url):
     try:
         time.sleep(1)
@@ -37,7 +38,7 @@ def fetch(url):
     else:
         return None
 
-
+# Requisito 2
 def scrape_novidades(html_content):
     selector = Selector(html_content)
     result = selector.css("h3.tec--card__title a::attr(href)").getall()
@@ -108,13 +109,40 @@ def scrape_noticia(html_content):
 
 # Requisito 5
 def get_tech_news(amount):
-    """Seu código deve vir aqui"""
+    URL_BASE = "https://www.tecmundo.com.br/novidades"
+    main_html_content = fetch(URL_BASE)
+    news = scrape_novidades(main_html_content)
+
+    while len(news) < amount:
+        next_page_url = scrape_next_page_link(main_html_content)
+        main_html_content = fetch(next_page_url)
+        novidades = scrape_novidades(main_html_content)
+
+        for item in novidades:
+            news.append(item)
+        
+    selected_links = []
+    selected_news = []
+
+    # https://www.delftstack.com/pt/howto/python/python-find-index-of-value-in-array/
+    for item in news:
+        if news.index(item) < amount:
+            selected_links.append(item)
+
+    for link in selected_links:
+        new_html_content = fetch(link)
+        noticia = scrape_noticia(new_html_content)
+        selected_news.append(noticia)       
+    
+    create_news(selected_news)
+    return selected_news
 
 
-# if __name__ == "__main__":
-#     main_page_html_content = fetch("https://www.tecmundo.com.br/novidades")
-#     new_page_html_content = fetch(
-#         "https://www.tecmundo.com.br/minha-serie/215168-10-"
-#         "viloes-animes-extremamente-inteligentes.htm")
-#     teste = scrape_noticia(new_page_html_content)
-#     print(teste)
+
+if __name__ == "__main__":
+    main_page_html_content = fetch("https://www.tecmundo.com.br/novidades")
+    new_page_html_content = fetch(
+        "https://www.tecmundo.com.br/minha-serie/215168-10-"
+        "viloes-animes-extremamente-inteligentes.htm")
+    teste = get_tech_news(2)
+    print(teste)
