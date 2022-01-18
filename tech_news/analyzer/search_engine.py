@@ -45,14 +45,26 @@ def search_by_date(date):
 
 # Requisito 8
 def search_by_source(source):
-    """Seu código deve vir aqui"""
+    news_list = list(db.news.find({"sources": re.compile(source, re.IGNORECASE)}))
+    news = []
+
+    for item in news_list:
+        news.append((item["title"], item["url"]))
+
+    return news
 
 
 # Requisito 9
 def search_by_category(category):
-    """Seu código deve vir aqui"""
+    news_list = list(db.news.find({"categories": re.compile(category, re.IGNORECASE)}))
+    news = []
+
+    for item in news_list:
+        news.append((item["title"], item["url"]))
+
+    return news
 
 
 if __name__ == "__main__":
-    teste = search_by_date("2020-11-23")
+    teste = search_by_source("teste")
     print(teste)
