@@ -140,5 +140,5 @@ if __name__ == "__main__":
     new_page_html_content = fetch(
         "https://www.tecmundo.com.br/minha-serie/215168-10-"
         "viloes-animes-extremamente-inteligentes.htm")
-    teste = get_tech_news(2)
-    print(teste)
+    teste = scrape_noticia(new_page_html_content)
+    print(teste['timestamp'])
