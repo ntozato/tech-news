@@ -26,6 +26,7 @@ def writer_repair(selector):
         writer = writer.strip()
     return writer
 
+
 # Requisito 1
 def fetch(url):
     try:
@@ -37,6 +38,7 @@ def fetch(url):
         return None
     else:
         return None
+
 
 # Requisito 2
 def scrape_novidades(html_content):
@@ -112,31 +114,25 @@ def get_tech_news(amount):
     URL_BASE = "https://www.tecmundo.com.br/novidades"
     main_html_content = fetch(URL_BASE)
     news = scrape_novidades(main_html_content)
+    selected_news = []
 
     while len(news) < amount:
         next_page_url = scrape_next_page_link(main_html_content)
         main_html_content = fetch(next_page_url)
         novidades = scrape_novidades(main_html_content)
 
-        for item in novidades:
-            news.append(item)
-        
-    selected_links = []
-    selected_news = []
+        for link in novidades:
+            news.append(link)
 
     # https://www.delftstack.com/pt/howto/python/python-find-index-of-value-in-array/
-    for item in news:
-        if news.index(item) < amount:
-            selected_links.append(item)
+    for link in news:
+        if news.index(link) < amount:
+            new_html_content = fetch(link)
+            noticia = scrape_noticia(new_html_content)
+            selected_news.append(noticia)
 
-    for link in selected_links:
-        new_html_content = fetch(link)
-        noticia = scrape_noticia(new_html_content)
-        selected_news.append(noticia)       
-    
     create_news(selected_news)
     return selected_news
-
 
 
 if __name__ == "__main__":
