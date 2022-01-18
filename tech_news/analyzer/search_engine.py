@@ -45,7 +45,8 @@ def search_by_date(date):
 
 # Requisito 8
 def search_by_source(source):
-    news_list = list(db.news.find({"sources": re.compile(source, re.IGNORECASE)}))
+    news_list = list(db.news.find(
+        {"sources": re.compile(source, re.IGNORECASE)}))
     news = []
 
     for item in news_list:
@@ -56,7 +57,8 @@ def search_by_source(source):
 
 # Requisito 9
 def search_by_category(category):
-    news_list = list(db.news.find({"categories": re.compile(category, re.IGNORECASE)}))
+    news_list = list(db.news.find(
+        {"categories": re.compile(category, re.IGNORECASE)}))
     news = []
 
     for item in news_list:
